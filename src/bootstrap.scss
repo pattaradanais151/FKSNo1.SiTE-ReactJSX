@@ -1,0 +1,25 @@
+// Bootstrap 5.3 เฉพาะ Components ที่ระบบใช้
+// ไม่รวม Utilities API (เช่น .p-3, .gap-3, .d-flex) เพราะใช้ !important และชนกับชื่อคลาสของ Tailwind
+// ไม่รวม transitions (.collapse ชนกับ Tailwind) และไม่ใช้ Bootstrap JavaScript
+
+// ประกาศลำดับ Layer ซ้ำกับ styles.css เพื่อให้ลำดับถูกต้องเสมอไม่ว่าไฟล์ใดโหลดก่อน
+@layer theme, base, bootstrap, components, utilities;
+
+@layer bootstrap {
+  @import "bootstrap/scss/functions";
+  @import "bootstrap/scss/variables";
+  @import "bootstrap/scss/variables-dark";
+  @import "bootstrap/scss/maps";
+  @import "bootstrap/scss/mixins";
+  @import "bootstrap/scss/root";
+  @import "bootstrap/scss/reboot";
+  @import "bootstrap/scss/type";
+  @import "bootstrap/scss/forms";
+  @import "bootstrap/scss/buttons";
+  @import "bootstrap/scss/button-group";
+  @import "bootstrap/scss/tables";
+  @import "bootstrap/scss/alert";
+  @import "bootstrap/scss/badge";
+  @import "bootstrap/scss/spinners";
+  @import "bootstrap/scss/close";
+}

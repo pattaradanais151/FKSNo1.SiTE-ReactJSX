@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FKSNo1.SiTE</title>
+    <meta name="description" content="ระบบบริหารงานบริการด้านไอที FKSNo1.SiTE สำหรับผู้ดูแลและพนักงาน" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ตั้งค่า Theme ก่อน Render เพื่อไม่ให้เกิด Flash -->
+    <style>
+      html { background: #f5f5f7; }
+      html.dark { background: #000; }
+    </style>
+    <script>
+      (function () {
+        try {
+          var p = localStorage.getItem('fksno1-theme');
+          if (p !== 'light' && p !== 'dark') p = 'system';
+          var dark = p === 'dark' || (p === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          var r = document.documentElement;
+          r.classList.toggle('dark', dark);
+          r.setAttribute('data-bs-theme', dark ? 'dark' : 'light');
+          r.style.colorScheme = dark ? 'dark' : 'light';
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>ระบบนี้ต้องเปิดใช้งาน JavaScript</noscript>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

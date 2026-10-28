@@ -1,0 +1,226 @@
+/*
+  ลำดับ CSS Layer: theme -> base -> bootstrap -> components -> utilities
+  - Bootstrap คอมไพล์จาก src/bootstrap.scss (เฉพาะ Components ไม่มี Utilities) อยู่ใน layer bootstrap
+  - Tailwind utilities อยู่ layer หลังสุด จึงชนะ Bootstrap components เสมอ เช่น "btn p-0" หรือ "form-control pl-9"
+  - CSS ที่ไม่อยู่ใน layer (ส่วนล่างของไฟล์นี้ และ Emotion) ชนะทุก layer
+    ดังนั้น อย่าตั้ง display/padding ใน Emotion บน element ที่ใช้ Tailwind class ควบคุมค่าเดียวกัน
+    (เช่น Emotion display:flex + className "hidden lg:flex" จะไม่ซ่อน)
+*/
+@layer theme, base, bootstrap, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Tailwind utilities ที่ผูกกับ Design Tokens: bg-surface, text-ink, text-muted, border-line, bg-brand, text-danger ... */
+@theme inline {
+  --font-sans: var(--app-font);
+  --color-app: var(--app-bg);
+  --color-surface: var(--app-surface);
+  --color-fill: var(--app-fill);
+  --color-ink: var(--app-text);
+  --color-muted: var(--app-muted);
+  --color-line: var(--app-border);
+  --color-brand: var(--app-accent);
+  --color-success: var(--tone-success-fg);
+  --color-warning: var(--tone-warning-fg);
+  --color-danger: var(--tone-danger-fg);
+  --color-info: var(--tone-info-fg);
+}
+
+:root {
+  --app-font: "Inter", "Noto Sans Thai", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --app-bg: #f5f5f7;
+  --app-surface: #ffffff;
+  --app-fill: rgba(0, 0, 0, 0.05);
+  --app-sidebar: #fbfbfd;
+  --app-header: rgba(245, 245, 247, 0.82);
+  --app-text: #1d1d1f;
+  --app-muted: #6e6e73;
+  --app-border: rgba(0, 0, 0, 0.1);
+  --app-accent: #0071e3;
+  --app-accent-hover: #0077ed;
+  --app-accent-soft: rgba(0, 113, 227, 0.1);
+  --app-radius: 14px;
+  --app-radius-lg: 18px;
+  --app-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.06);
+  --app-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.18);
+  --sidebar-w: 16.5rem;
+
+  /* สีสถานะ (Badge, Toast, ข้อความ) */
+  --tone-neutral-bg: #f2f2f7;
+  --tone-neutral-fg: #48484a;
+  --tone-info-bg: #e3f4fb;
+  --tone-info-fg: #00668f;
+  --tone-primary-bg: #e8f1fd;
+  --tone-primary-fg: #0058b0;
+  --tone-warning-bg: #fff3dc;
+  --tone-warning-fg: #8a5300;
+  --tone-success-bg: #e4f6e9;
+  --tone-success-fg: #1e7b34;
+  --tone-danger-bg: #fdeceb;
+  --tone-danger-fg: #b3261e;
+
+  /* ผูก Bootstrap เข้ากับ Tokens */
+  --bs-body-font-family: var(--app-font);
+  --bs-body-bg: var(--app-bg);
+  --bs-body-color: var(--app-text);
+  --bs-secondary-color: var(--app-muted);
+  --bs-border-color: var(--app-border);
+  --bs-border-radius: 0.625rem;
+  --bs-link-color: var(--app-accent);
+  --bs-link-hover-color: var(--app-accent-hover);
+  --bs-link-color-rgb: 0, 113, 227;
+  --bs-link-hover-color-rgb: 0, 119, 237;
+}
+
+.dark {
+  --app-bg: #000000;
+  --app-surface: #1c1c1e;
+  --app-fill: rgba(255, 255, 255, 0.08);
+  --app-sidebar: #0d0d0e;
+  --app-header: rgba(0, 0, 0, 0.72);
+  --app-text: #f5f5f7;
+  --app-muted: #98989d;
+  --app-border: rgba(255, 255, 255, 0.14);
+  --app-accent: #2997ff;
+  --app-accent-hover: #4aa8ff;
+  --app-accent-soft: rgba(41, 151, 255, 0.18);
+  --app-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --app-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.6);
+
+  --tone-neutral-bg: rgba(255, 255, 255, 0.08);
+  --tone-neutral-fg: #d1d1d6;
+  --tone-info-bg: rgba(100, 210, 255, 0.16);
+  --tone-info-fg: #7fd4ff;
+  --tone-primary-bg: rgba(41, 151, 255, 0.18);
+  --tone-primary-fg: #8cc4ff;
+  --tone-warning-bg: rgba(255, 159, 10, 0.18);
+  --tone-warning-fg: #ffc56b;
+  --tone-success-bg: rgba(48, 209, 88, 0.18);
+  --tone-success-fg: #7ee2a0;
+  --tone-danger-bg: rgba(255, 69, 58, 0.18);
+  --tone-danger-fg: #ff8a80;
+
+  --bs-link-color-rgb: 41, 151, 255;
+  --bs-link-hover-color-rgb: 74, 168, 255;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--app-font);
+  background: var(--app-bg);
+  color: var(--app-text);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+}
+
+/* ---------- Bootstrap Components ปรับให้ใช้ Tokens ---------- */
+
+.btn {
+  --bs-btn-font-weight: 500;
+  --bs-btn-border-radius: 0.625rem;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--app-accent);
+  --bs-btn-border-color: var(--app-accent);
+  --bs-btn-hover-bg: var(--app-accent-hover);
+  --bs-btn-hover-border-color: var(--app-accent-hover);
+  --bs-btn-active-bg: var(--app-accent-hover);
+  --bs-btn-active-border-color: var(--app-accent-hover);
+  --bs-btn-disabled-bg: var(--app-accent);
+  --bs-btn-disabled-border-color: var(--app-accent);
+  --bs-btn-color: #fff;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-color: #fff;
+  --bs-btn-disabled-color: #fff;
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: var(--app-text);
+  --bs-btn-border-color: var(--app-border);
+  --bs-btn-hover-color: var(--app-text);
+  --bs-btn-hover-bg: var(--app-fill);
+  --bs-btn-hover-border-color: var(--app-border);
+  --bs-btn-active-color: var(--app-text);
+  --bs-btn-active-bg: var(--app-fill);
+  --bs-btn-active-border-color: var(--app-border);
+  --bs-btn-disabled-color: var(--app-muted);
+  --bs-btn-disabled-border-color: var(--app-border);
+}
+
+.form-control,
+.form-select {
+  background-color: var(--app-surface);
+  border-color: var(--app-border);
+  color: var(--app-text);
+}
+
+.form-control::placeholder {
+  color: var(--app-muted);
+  opacity: 0.8;
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: var(--app-accent);
+  box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--app-accent) 25%, transparent);
+}
+
+.form-control[aria-invalid="true"],
+.form-select[aria-invalid="true"] {
+  border-color: var(--tone-danger-fg);
+}
+
+.form-check-input:checked {
+  background-color: var(--app-accent);
+  border-color: var(--app-accent);
+}
+
+.form-label {
+  margin-bottom: 0.375rem;
+}
+
+.table {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--app-text);
+  --bs-table-border-color: var(--app-border);
+  --bs-table-hover-bg: var(--app-fill);
+  --bs-table-hover-color: var(--app-text);
+  margin-bottom: 0;
+}
+
+.table > thead th {
+  color: var(--app-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- Accessibility ---------- */
+
+:focus-visible {
+  outline: 2px solid var(--app-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
