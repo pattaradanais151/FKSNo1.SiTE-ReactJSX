@@ -1,0 +1,16 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "FKSNo1.SiTE",
+    "identifier": "{{HOST}}"
+  },
+  "entries": [
+    {
+      "identifier": "urn:ai:{{HOST}}:knowledge:llms-txt",
+      "displayName": "FKSNo1.SiTE system overview (llms.txt)",
+      "type": "text/plain",
+      "url": "{{SITE_URL}}/llms.txt",
+      "description": "ภาพรวมของระบบหลังบ้านบริหารงานบริการด้านไอทีของ FKS Service: ระบบนี้ใช้ภายในและต้องล็อกอิน ไม่มี API หรือ MCP Server สาธารณะ ไฟล์นี้อธิบายโมดูล สถานะงาน ประเภทงาน และบทบาทผู้ใช้ โดยไม่มีข้อมูลลูกค้าหรือข้อมูลการเงิน"
+    }
+  ]
+}
