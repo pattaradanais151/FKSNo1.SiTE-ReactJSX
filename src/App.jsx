@@ -11,7 +11,7 @@ import { usePageTitle } from './lib/utils.js'
   Route ทั้งหมดของระบบ
   - min: Role ขั้นต่ำ (staff < admin < super_admin) ตรวจซ้ำที่ RLS/RPC ใน Database เสมอ
   - page: ชื่อไฟล์ใน src/pages/ (โหลดแบบ Lazy อัตโนมัติด้วย import.meta.glob)
-  - phase: Phase ที่จะส่งไฟล์หน้านั้น (ใช้แสดงเมื่อไฟล์ยังไม่มี)
+  - phase: Phase ที่ส่งไฟล์หน้านั้น (ใช้แสดงเมื่อไฟล์ยังไม่มี)
 */
 const ROUTES = [
   { path: '/', page: 'Dashboard', title: 'ภาพรวม', min: 'staff', phase: 4 },
@@ -29,6 +29,7 @@ const ROUTES = [
   { path: '/profile', page: 'Profile', title: 'โปรไฟล์', min: 'staff', phase: 6 },
   { path: '/settings/store', page: 'StoreSettings', title: 'ข้อมูลร้าน', min: 'admin', phase: 6 },
   { path: '/settings/policies', page: 'Policies', title: 'ข้อตกลงและนโยบาย', min: 'admin', phase: 6 },
+  { path: '/settings/notifications', page: 'Notifications', title: 'การแจ้งเตือน Discord', min: 'admin', phase: 7 },
 ]
 
 // Lazy Load ทุกหน้า หน้าที่ยังไม่มีไฟล์จะได้ค่า null และแสดง PendingPage แทน

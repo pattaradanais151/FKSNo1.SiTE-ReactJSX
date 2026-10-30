@@ -200,9 +200,13 @@ function SummaryTab({ params, update, people }) {
   }, [from, to, invalid, reloadKey])
 
   const number = new Intl.NumberFormat('th-TH')
-  const report = data?.report
-  const finance = report?.finance
-  const maxType = Math.max(1, ...(report?.by_type ?? []).map((row) => row.count))
+  // รองรับกรณี RPC คืนค่าไม่ครบ (เช่น ฐานข้อมูลยังไม่ได้รัน Migration ล่าสุด) ไม่ให้หน้าล้ม
+  const report = data?.report && typeof data.report === 'object' ? data.report : null
+  const paymentTotals = data?.payments && typeof data.payments === 'object' ? data.payments : {}
+  const finance = report?.finance ?? null
+  const byType = Array.isArray(report?.by_type) ? report.by_type : []
+  const byAssignee = Array.isArray(report?.by_assignee) ? report.by_assignee : []
+  const maxType = Math.max(1, ...byType.map((row) => Number(row.count) || 0))
 
   return (
     <>
@@ -218,30 +222,34 @@ function SummaryTab({ params, update, people }) {
         </Card>
       ) : loading && !data ? (
         <LoadingState />
-      ) : !report ? null : (
+      ) : !report ? (
+        <Card>
+          <ErrorState message="ไม่พบข้อมูลรายงาน กรุณาตรวจสอบว่ารัน Migration 003 ในฐานข้อมูลแล้ว" onRetry={() => setReloadKey((key) => key + 1)} />
+        </Card>
+      ) : (
         <div className={`space-y-4 ${loading ? 'opacity-60' : ''}`} aria-busy={loading}>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <Stat label="งานที่รับเข้า" value={number.format(report.jobs_received)} hint="ตามวันที่รับงาน" />
+            <Stat label="งานที่รับเข้า" value={number.format(report.jobs_received ?? 0)} hint="ตามวันที่รับงาน" />
             <Stat label="ยกเลิก (จากงานที่รับเข้า)" value={number.format(report.by_status?.cancelled ?? 0)} tone="danger" />
-            <Stat label="ปิดงานสำเร็จในช่วงนี้" value={number.format(report.completed_in_range)} hint="ตามวันที่เสร็จสิ้น" tone="success" />
+            <Stat label="ปิดงานสำเร็จในช่วงนี้" value={number.format(report.completed_in_range ?? 0)} hint="ตามวันที่เสร็จสิ้น" tone="success" />
             <Stat
               label="เวลาเฉลี่ยจนเสร็จ"
-              value={report.avg_completion_days === null ? '-' : `${report.avg_completion_days} วัน`}
+              value={report.avg_completion_days === null || report.avg_completion_days === undefined ? '-' : `${report.avg_completion_days} วัน`}
               hint="จากวันที่รับงานถึงเวลาเสร็จสิ้น"
             />
           </div>
 
           {finance && (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <Stat label="ยอดสุทธิของงานที่รับเข้า" value={formatMoney(finance.net_total)} hint="หลังส่วนลด ไม่รวมดอกเบี้ย ไม่รวมงานยกเลิก" />
-              <Stat label="ยอดคงค้างของงานที่รับเข้า" value={formatMoney(finance.balance_total)} hint="ไม่รวมงานยกเลิก" tone="warning" />
+              <Stat label="ยอดสุทธิของงานที่รับเข้า" value={formatMoney(finance.net_total ?? 0)} hint="หลังส่วนลด ไม่รวมดอกเบี้ย ไม่รวมงานยกเลิก" />
+              <Stat label="ยอดคงค้างของงานที่รับเข้า" value={formatMoney(finance.balance_total ?? 0)} hint="ไม่รวมงานยกเลิก" tone="warning" />
               <Stat
                 label="เงินรับจริงในช่วงนี้"
-                value={formatMoney(data.payments.net_total)}
-                hint={`ตามวันที่รับเงิน หักคืนเงินแล้ว (${data.payments.payment_count} รายการ)`}
+                value={formatMoney(paymentTotals.net_total ?? 0)}
+                hint={`ตามวันที่รับเงิน หักคืนเงินแล้ว (${paymentTotals.payment_count ?? 0} รายการ)`}
                 tone="success"
               />
-              <Stat label="คืนเงินในช่วงนี้" value={formatMoney(data.payments.refund_total)} tone="danger" />
+              <Stat label="คืนเงินในช่วงนี้" value={formatMoney(paymentTotals.refund_total ?? 0)} tone="danger" />
             </div>
           )}
 
@@ -261,7 +269,7 @@ function SummaryTab({ params, update, people }) {
           <div className="grid gap-4 xl:grid-cols-2">
             <Card flush>
               <h2 className="m-0 px-5 pt-5 pb-3 text-base font-semibold">แยกตามประเภทงาน</h2>
-              {report.by_type.length === 0 ? (
+              {byType.length === 0 ? (
                 <p className="m-0 px-5 pb-5 text-sm text-muted">ไม่มีงานในช่วงนี้</p>
               ) : (
                 <TableWrap minWidth={520}>
@@ -285,17 +293,17 @@ function SummaryTab({ params, update, people }) {
                       </tr>
                     </thead>
                     <tbody>
-                      {report.by_type.map((row) => (
+                      {byType.map((row) => (
                         <tr key={row.job_type}>
                           <td className="pl-5">
                             <div className="text-sm">{labels[row.job_type] || row.job_type}</div>
                             <div className="mt-1 h-1.5 rounded-full bg-fill" aria-hidden="true">
-                              <div className="h-1.5 rounded-full bg-brand" style={{ width: `${(row.count / maxType) * 100}%` }} />
+                              <div className="h-1.5 rounded-full bg-brand" style={{ width: `${((Number(row.count) || 0) / maxType) * 100}%` }} />
                             </div>
                           </td>
-                          <td className="text-right tabular-nums">{number.format(row.count)}</td>
-                          <td className="text-right tabular-nums">{number.format(row.cancelled)}</td>
-                          {finance && <td className="pr-5 text-right tabular-nums">{formatMoney(row.net_total)}</td>}
+                          <td className="text-right tabular-nums">{number.format(row.count ?? 0)}</td>
+                          <td className="text-right tabular-nums">{number.format(row.cancelled ?? 0)}</td>
+                          {finance && <td className="pr-5 text-right tabular-nums">{formatMoney(row.net_total ?? 0)}</td>}
                         </tr>
                       ))}
                     </tbody>
@@ -306,7 +314,7 @@ function SummaryTab({ params, update, people }) {
 
             <Card flush>
               <h2 className="m-0 px-5 pt-5 pb-3 text-base font-semibold">แยกตามผู้รับผิดชอบ</h2>
-              {report.by_assignee.length === 0 ? (
+              {byAssignee.length === 0 ? (
                 <p className="m-0 px-5 pb-5 text-sm text-muted">ไม่มีงานในช่วงนี้</p>
               ) : (
                 <TableWrap minWidth={520}>
@@ -331,15 +339,15 @@ function SummaryTab({ params, update, people }) {
                       </tr>
                     </thead>
                     <tbody>
-                      {report.by_assignee.map((row) => (
+                      {byAssignee.map((row) => (
                         <tr key={row.assigned_to || 'none'}>
                           <td className="pl-5 text-sm">
                             {row.assigned_to ? people[row.assigned_to]?.full_name || 'ไม่ทราบชื่อ' : 'ยังไม่มอบหมาย'}
                           </td>
-                          <td className="text-right tabular-nums">{number.format(row.total)}</td>
-                          <td className="text-right tabular-nums">{number.format(row.open)}</td>
-                          <td className="text-right tabular-nums">{number.format(row.completed)}</td>
-                          <td className="pr-5 text-right tabular-nums">{number.format(row.cancelled)}</td>
+                          <td className="text-right tabular-nums">{number.format(row.total ?? 0)}</td>
+                          <td className="text-right tabular-nums">{number.format(row.open ?? 0)}</td>
+                          <td className="text-right tabular-nums">{number.format(row.completed ?? 0)}</td>
+                          <td className="pr-5 text-right tabular-nums">{number.format(row.cancelled ?? 0)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -687,4 +695,4 @@ function AuditTab({ params, update, people, peopleList }) {
       <p className="mt-3 mb-0 text-xs text-muted">Audit Log แก้ไขหรือลบไม่ได้ (บังคับที่ Database) เนื้อหาบันทึกภายในและนโยบายไม่ถูกเก็บซ้ำใน Log</p>
     </>
   )
-}
+} 

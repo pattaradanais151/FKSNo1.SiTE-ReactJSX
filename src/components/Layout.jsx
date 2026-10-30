@@ -4,6 +4,7 @@ import styled from '@emotion/styled'
 import {
   Ban,
   BarChart3,
+  BellRing,
   ChevronDown,
   ChevronRight,
   ClipboardList,
@@ -63,6 +64,7 @@ const NAV_SECTIONS = [
       { to: '/employees', label: 'พนักงาน', icon: UserCog, min: 'admin' },
       { to: '/settings/store', label: 'ข้อมูลร้าน', icon: Store, min: 'admin' },
       { to: '/settings/policies', label: 'ข้อตกลงและนโยบาย', icon: FileText, min: 'admin' },
+      { to: '/settings/notifications', label: 'การแจ้งเตือน Discord', icon: BellRing, min: 'admin' },
     ],
   },
 ]
@@ -108,6 +110,7 @@ function buildCrumbs(pathname) {
     case 'settings':
       if (sub === 'store') return [home, { label: 'ข้อมูลร้าน' }]
       if (sub === 'policies') return [home, { label: 'ข้อตกลงและนโยบาย' }]
+      if (sub === 'notifications') return [home, { label: 'การแจ้งเตือน Discord' }]
       return [home, { label: 'ตั้งค่า' }]
     default:
       return [home, { label: 'ไม่พบหน้า' }]

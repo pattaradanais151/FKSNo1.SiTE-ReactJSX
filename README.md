@@ -1,24 +1,25 @@
 # FKSNo1.SiTE
 
-ระบบบริหารงานบริการด้านไอที (React + Vite + Supabase)
+ระบบบริหารงานบริการด้านไอทีครบวงจร รองรับงานซ่อม เคลม ทำเว็บไซต์ และระบบอินเทอร์เน็ต พร้อมระบบการเงิน ผ่อนชำระ และแจ้งเตือนผ่าน Discord
 
-## เริ่มใช้งาน (Development)
+## การติดตั้งและใช้งาน (Development)
 
-1. ติดตั้ง Node.js 20 ขึ้นไป
-2. `npm install`
-3. `cp .env.example .env.local` แล้วกรอก `VITE_SUPABASE_URL` และ `VITE_SUPABASE_PUBLISHABLE_KEY`
-   (Supabase Dashboard > Project Settings > API Keys; ใช้เฉพาะ Publishable/Anon Key)
-4. `npm run dev` แล้วเปิด http://localhost:5173
+1. โคลนโปรเจกต์และติดตั้ง Dependencies:
+   ```bash
+   npm install
+   ```
+2. สร้างไฟล์ `.env.local` จาก `.env.example` แล้วกรอก `VITE_SUPABASE_URL` และ `VITE_SUPABASE_PUBLISHABLE_KEY` (ใช้เฉพาะ Anon/Publishable Key)
+3. รันสคริปต์ Migration `001` ถึง `004` บน Supabase SQL Editor
+4. รันโปรแกรมในโหมดพัฒนา:
+   ```bash
+   npm run dev
+   ```
 
-## คำสั่ง
-- `npm run dev`: เปิดโหมดพัฒนา
-- `npm run build`: Build สำหรับ Production (โฟลเดอร์ `dist`)
-- `npm run preview`: ดูผล Build
-- `npm run lint`: ตรวจโค้ด
+## การ Deploy บน Cloudflare Pages
 
-## Deploy (Cloudflare Pages)
-- Build command: `npm run build`
-- Build output directory: `dist`
-- Environment variables: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
+- **Build Command:** `npm run build`
+- **Build Output Directory:** `dist`
+- **Environment Variables:** `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
+- ระบบมีไฟล์ `public/_redirects` รองรับ SPA Client-Side Routing เรียบร้อยแล้ว
 
-ดู `PROJECT_SPEC.md` สำหรับข้อกำหนดและสูตรการเงิน
+ดูรายละเอียดข้อกำหนดทางเทคนิคทั้งหมดใน `PROJECT_SPEC.md`
